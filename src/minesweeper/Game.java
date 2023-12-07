@@ -28,8 +28,6 @@ import javax.swing.border.TitledBorder;
 import minesweeper.Time;
 import minesweeper.TimeComparator;
 
-
-
 // This is the main controller class
 public class Game implements MouseListener, ActionListener, WindowListener
 {

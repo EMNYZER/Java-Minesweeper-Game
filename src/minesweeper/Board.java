@@ -162,7 +162,7 @@ public class Board
             
             connection = DriverManager.getConnection(dbURL); 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM GAME_STATE");
+            resultSet = statement.executeQuery("SELECT * FROM game_state");
             
             while(resultSet.next()) 
             {
@@ -201,7 +201,7 @@ public class Board
             
             //--------------Load Cells State-------------------//
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM CELL");
+            resultSet = statement.executeQuery("SELECT * FROM cell");
 
             for(int x = 0 ; x < cols ; x++) 
             {
@@ -209,9 +209,9 @@ public class Board
                 {                                        
                     resultSet.next();
                     
-                    cells[x][y].setContent(resultSet.getString("CONTENT"));
-                    cells[x][y].setMine(resultSet.getBoolean("MINE"));
-                    cells[x][y].setSurroundingMines(resultSet.getInt("SURROUNDING_MINES"));                    
+                    cells[x][y].setContent(resultSet.getString("Content"));
+                    cells[x][y].setMine(resultSet.getBoolean("Mine"));
+                    cells[x][y].setSurroundingMines(resultSet.getInt("Surrounding_Mines"));                    
                 }
             }
             
@@ -221,11 +221,11 @@ public class Board
 
             //---------------Load Game Variables-----------------//
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM GAME_STATE");
+            resultSet = statement.executeQuery("SELECT * FROM game_state");
 
             resultSet.next();
                         
-            Pair p = new Pair(resultSet.getInt("TIMER"),resultSet.getInt("MINES"));
+            Pair p = new Pair(resultSet.getInt("Timer"),resultSet.getInt("Mines"));
             
             //After loading, delete the saved game
             deleteSavedGame();
@@ -259,13 +259,13 @@ public class Board
             connection = DriverManager.getConnection(dbURL); 
 
             
-            //----------EMPTY GAME_STATE TABLE------//
-            String template = "DELETE FROM GAME_STATE"; 
+            //----------EMPTY game_state TABLE------//
+            String template = "DELETE FROM game_state"; 
             statement = connection.prepareStatement(template);
             statement.executeUpdate();
             
             //----------EMPTY CELL TABLE------//
-            template = "DELETE FROM CELL"; 
+            template = "DELETE FROM cell"; 
             statement = connection.prepareStatement(template);
             statement.executeUpdate();
             

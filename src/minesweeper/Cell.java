@@ -1,7 +1,5 @@
 package minesweeper;
 
-
-
 public class Cell 
 {
     private boolean mine;
