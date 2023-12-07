@@ -90,7 +90,5 @@ public class Menu {
             } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
                 e.printStackTrace();
     }
-
-    // Metode untuk memainkan backsound musik
         }
     }

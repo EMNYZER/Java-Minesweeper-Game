@@ -904,8 +904,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
         }
     }
 
-    //-------------------------RELATED TO SCORES----------------------//
-
 
     
     //---------------------EMPTY FUNCTIONS-------------------------------//
