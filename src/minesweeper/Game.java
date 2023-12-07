@@ -1,6 +1,5 @@
 package minesweeper;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,7 +14,13 @@ import java.security.CodeSource;
 import java.util.ArrayList;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.util.Pair;
@@ -42,18 +47,16 @@ public class Game implements MouseListener, ActionListener, WindowListener
     public Game()
     {
         // set db path
-        String p = "";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-        try 
-        {
-            p = new File(Game.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath() + "\\db.accdb";
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mineswepeer", "root", "");
         }
-        catch (URISyntaxException ex) 
-        {
-            System.out.println("Error loading database file.");
+        catch (SQLException ex) {
+            ex.printStackTrace();
         }
-
-        dbPath =   "jdbc:ucanaccess://" + p;
 
         
         score = new Score();
@@ -522,7 +525,7 @@ public class Game implements MouseListener, ActionListener, WindowListener
         
         c.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        dialog.setTitle("Minesweeper Statistics - Haris Muneer");
+        dialog.setTitle("Minesweeper");
         dialog.add(c);
         dialog.pack();
         dialog.setLocationRelativeTo(gui);
@@ -596,15 +599,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
     }
     
 
-    //-------------------------------------------------------------------------//
-    
-    //-------------------------------------------------------------------------//    
-    
-
-    //-------------------------------------------------------------------------//
-
-    
-    //--------------------------------------------------------------------------//
     
     public boolean isFinished()
     {
@@ -915,42 +909,23 @@ public class Game implements MouseListener, ActionListener, WindowListener
     
     //---------------------EMPTY FUNCTIONS-------------------------------//
     @Override
-    public void mousePressed(MouseEvent e) {
-    }
-
+    public void mousePressed(MouseEvent e) {}
     @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
+    public void mouseReleased(MouseEvent e) {}
     @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
+    public void mouseEntered(MouseEvent e) {}
     @Override
-    public void mouseExited(MouseEvent e) {
-    }    
-
+    public void mouseExited(MouseEvent e) {}
     @Override
-    public void windowOpened(WindowEvent e) {
-    }
-
+    public void windowOpened(WindowEvent e) {}
     @Override
-    public void windowClosed(WindowEvent e) {
-    }
-
+    public void windowClosed(WindowEvent e) {}
     @Override
-    public void windowIconified(WindowEvent e) {
-    }
-
+    public void windowIconified(WindowEvent e) {}
     @Override
-    public void windowDeiconified(WindowEvent e) {
-    }
-
+    public void windowDeiconified(WindowEvent e) {}
     @Override
-    public void windowActivated(WindowEvent e) {
-    }
-
+    public void windowActivated(WindowEvent e) {}
     @Override
-    public void windowDeactivated(WindowEvent e) {
-    }
+    public void windowDeactivated(WindowEvent e) {}
 }

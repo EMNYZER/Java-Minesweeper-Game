@@ -160,20 +160,20 @@ public class Score
 
             connection = DriverManager.getConnection(dbURL); 
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM SCORE");
+            resultSet = statement.executeQuery("SELECT * FROM Score");
 
             while(resultSet.next()) 
             {
-                gamesPlayed = resultSet.getInt("GAMES_PLAYED");
-                gamesWon = resultSet.getInt("GAMES_WON");
+                gamesPlayed = resultSet.getInt("Games_Played");
+                gamesWon = resultSet.getInt("Games_won");
 
-                longestWinningStreak = resultSet.getInt("LWSTREAK");
-                longestLosingStreak = resultSet.getInt("LLSTREAK");
+                longestWinningStreak = resultSet.getInt("LWStreak");
+                longestLosingStreak = resultSet.getInt("LLStreak");
 
-                currentStreak = resultSet.getInt("CSTREAK");
+                currentStreak = resultSet.getInt("CStreak");
 
-                currentWinningStreak = resultSet.getInt("CWSTREAK");
-                currentLosingStreak = resultSet.getInt("CLSTREAK");                                
+                currentWinningStreak = resultSet.getInt("CWStreak");
+                currentLosingStreak = resultSet.getInt("CLStreak");                                
             }
             
             // cleanup resources, once after processing
@@ -184,13 +184,13 @@ public class Score
             //------------------------LOAD TIMES------------------//
             
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM TIME");
+            resultSet = statement.executeQuery("SELECT * FROM time");
             
             
             while(resultSet.next())
             {
-                int time = resultSet.getInt("TIME_VALUE");
-                Date date = resultSet.getDate("DATE_VALUE");
+                int time = resultSet.getInt("Time_Value");
+                Date date = resultSet.getDate("Date_Value");
                 
                 bestTimes.add(new Time(time,date));
             }
@@ -227,17 +227,17 @@ public class Score
 
             
             //----------EMPTY SCORE TABLE------//
-            String template = "DELETE FROM SCORE"; 
+            String template = "DELETE FROM score"; 
             statement = connection.prepareStatement(template);
             statement.executeUpdate();
             
             //----------EMPTY TIME TABLE------//
-            template = "DELETE FROM TIME"; 
+            template = "DELETE FROM time"; 
             statement = connection.prepareStatement(template);
             statement.executeUpdate();
             
             //--------------INSERT DATA INTO SCORE TABLE-----------//            
-            template = "INSERT INTO SCORE (GAMES_PLAYED,GAMES_WON, LWSTREAK, LLSTREAK, CSTREAK, CWSTREAK, CLSTREAK) values (?,?,?,?,?,?,?)";
+            template = "INSERT INTO score (Games_Played,Games_won, LWStreak, LLStreak, CStreak, CWStreak, CLStreak) values (?,?,?,?,?,?,?)";
             statement = connection.prepareStatement(template);
             
             statement.setInt(1, gamesPlayed);
@@ -251,7 +251,7 @@ public class Score
             statement.executeUpdate();
             
             //-------------------INSERT DATA INTO TIME TABLE-----------//
-            template = "INSERT INTO TIME (TIME_VALUE, DATE_VALUE) values (?,?)";
+            template = "INSERT INTO time (Time_Value, Date_Value) values (?,?)";
             statement = connection.prepareStatement(template);
             
 

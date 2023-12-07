@@ -294,7 +294,7 @@ public class Board
 
             
             //--------------INSERT DATA INTO CELL TABLE-----------//            
-            String template = "INSERT INTO CELL (CONTENT, MINE, SURROUNDING_MINES) values (?,?,?)";
+            String template = "INSERT INTO cell (Content, Mine, Surrounding_Mine) values (?,?,?)";
             statement = connection.prepareStatement(template);
 
             for(int x = 0 ; x < cols ; x++) 
@@ -304,7 +304,6 @@ public class Board
                     statement.setString(1, cells[x][y].getContent());
                     statement.setBoolean(2, cells[x][y].getMine());
                     statement.setInt(3, (int)cells[x][y].getSurroundingMines());                    
-
                     statement.executeUpdate();
                 }
             }
@@ -312,7 +311,7 @@ public class Board
 
             
             //--------------------SAVE GAME STATE----------------------//
-            template = "INSERT INTO GAME_STATE (TIMER,MINES) values (?,?)";
+            template = "INSERT INTO game_state (Timer,Minute) values (?,?)";
             statement = connection.prepareStatement(template);
             
             statement.setInt(1, timer);

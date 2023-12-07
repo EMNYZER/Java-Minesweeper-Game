@@ -1,11 +1,11 @@
 package minesweeper;
 
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
-
 
 public class UI extends JFrame
 {
@@ -26,7 +26,7 @@ public class UI extends JFrame
     private boolean stopTimer;
     
     // Frame settings
-    private final String FRAME_TITLE = "Minesweeper ~ Developed by Haris Muneer";
+    private final String FRAME_TITLE = "Minesweeper";
     
     private int FRAME_WIDTH = 520;
     private int FRAME_HEIGHT = 550;
@@ -39,20 +39,15 @@ public class UI extends JFrame
     private Icon flag;
     private Icon tile;
     
-    
     // Menu Bar and Items
-    
     private JMenuBar menuBar;
     private JMenu gameMenu;
     private JMenuItem newGame;
     private JMenuItem statistics;
     private JMenuItem exit;
-
-    
     
     //---------------------------------------------------------------//
-    public UI(int r, int c, int m)
-    {                
+    public UI(int r, int c, int m) {                
         this.rows = r;
         this.cols = c;
         
@@ -331,9 +326,9 @@ public class UI extends JFrame
        statistics.addActionListener(game);
        exit.addActionListener(game);
 
-       newGame.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
-       exit.setAccelerator(KeyStroke.getKeyStroke('Q', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
-       statistics.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));       
+       newGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+       exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+       statistics.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
     }
     
     
@@ -419,36 +414,27 @@ public class UI extends JFrame
         flag =   resizeIcon(d, bWidth - bOffset, bHeight - bOffset);        
         
         d = new ImageIcon(getClass().getResource("/resources/tile.png"));                
-        tile =   resizeIcon(d, bWidth - bOffset, bHeight - bOffset);        
-                
-        //-------------------------------------------------------//
-        
+        tile =   resizeIcon(d, bWidth - bOffset, bHeight - bOffset);                
     }
     
-    public Icon getIconMine()
-    {
+    public Icon getIconMine(){
         return mine;
     }
 
-    public Icon getIconRedMine()
-    {
+    public Icon getIconRedMine(){
         return redMine;
     }
     
-    public Icon getIconFlag()
-    {
+    public Icon getIconFlag(){
         return flag;
     }
     
-    public Icon getIconTile()
-    {
+    public Icon getIconTile(){
         return tile;       
     }        
     
     
-    //---------------------------------------------------------------------//
-    public void setTextColor(JButton b)
-    {
+    public void setTextColor(JButton b){
         if (b.getText().equals("1"))
             b.setForeground(Color.blue);
         else if (b.getText().equals("2"))
@@ -466,7 +452,5 @@ public class UI extends JFrame
         else if (b.getText().equals("8"))
             b.setForeground(new Color(153,0,76));        
     }
-    //------------------------------------------------------------------------//
-    
     
 }
