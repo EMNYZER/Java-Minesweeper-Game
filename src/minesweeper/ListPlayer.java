@@ -60,14 +60,9 @@ public class ListPlayer {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                    // Dapatkan pemain yang dipilih
                     String selectedPlayer = playerList.getSelectedValue();
-
-                    // Dapatkan id_player dari database (gantilah dengan metode Anda)
                     int playerId = getPlayerId(selectedPlayer);
-
-                    // Buka jendela bermain dengan membawa id_player
-                    openPlayWindow();
+                    openPlayWindow(playerId);
                 }
             }
         });
@@ -146,8 +141,8 @@ public class ListPlayer {
         return playerId;
     }
 
-    private void openPlayWindow() {
+    private void openPlayWindow(int playerId) {
         frame.dispose();
-        new Game();
+        new Game(playerId);
     }
 }

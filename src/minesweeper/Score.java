@@ -9,13 +9,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
+import java.util.*;
 import java.util.Comparator;
 
 
 public class Score
 {
     private Connection connection;
+    private int playerId;
 
     ArrayList<Time> bestTimes;
     
@@ -30,15 +31,22 @@ public class Score
     int currentWinningStreak;
     int currentLosingStreak;
     
-    public Score()
+    public Score(int playerId)
     {
         this.connection = DatabaseConnection.getConnection();
-
+        this.playerId = playerId;
         gamesPlayed = gamesWon = currentStreak = longestLosingStreak = longestWinningStreak = currentWinningStreak = currentLosingStreak = 0;
         bestTimes = new ArrayList();
     }
     
-    
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
     public int getGamesPlayed()
     {
         return gamesPlayed;        
@@ -146,13 +154,7 @@ public class Score
         if(bestTimes.size() > 5)
             bestTimes.remove(bestTimes.size()-1);
     }
-     
-    //--------------------------------------------------------//
 
-    
-    //------------DATABASE--------------------------//
-    
-    //------------POPULATE FROM DATABASE------------//
     public boolean populate()
     {
         Statement statement = null;
@@ -176,35 +178,9 @@ public class Score
                 currentWinningStreak = resultSet.getInt("CWStreak");
                 currentLosingStreak = resultSet.getInt("CLStreak");                                
             }
-            
-            // cleanup resources, once after processing
             resultSet.close();
             statement.close();
 
-            
-            //------------------------LOAD TIMES------------------//
-            
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM time");
-            
-            
-            while(resultSet.next())
-            {
-                int time = resultSet.getInt("Time_Value");
-                Date date = resultSet.getDate("Date_Value");
-                
-                bestTimes.add(new Time(time,date));
-            }
-            
-            
-            // cleanup resources, once after processing
-            resultSet.close();
-            statement.close();
-            
-            
-            // and then finally close connection
-            // connection.close();            
-            
             return true;
         }
         catch(SQLException sqlex)
@@ -215,55 +191,25 @@ public class Score
     }
 
     
-    public void save()
+    public void save(int playerId)
     {
         PreparedStatement statement = null;
         
-        try {
-           
-            //----------EMPTY SCORE TABLE------//
-            String template = "DELETE FROM score"; 
-            statement = connection.prepareStatement(template);
+        try {          
+            String scoreTemplate = "INSERT INTO score (Id, Games_Played, Games_won, LWStreak, LLStreak, CStreak, CWStreak, CLStreak) VALUES (?,?,?,?,?,?,?,?)";
+            statement = connection.prepareStatement(scoreTemplate);
+        
+            statement.setInt(1, playerId);
+            statement.setInt(2, gamesPlayed);
+            statement.setInt(3, gamesWon);
+            statement.setInt(4, longestWinningStreak);
+            statement.setInt(5, longestLosingStreak);
+            statement.setInt(6, currentStreak);
+            statement.setInt(7, currentWinningStreak);
+            statement.setInt(8, currentLosingStreak);
+        
             statement.executeUpdate();
-            
-            //----------EMPTY TIME TABLE------//
-            template = "DELETE FROM time"; 
-            statement = connection.prepareStatement(template);
-            statement.executeUpdate();
-            
-            //--------------INSERT DATA INTO SCORE TABLE-----------//            
-            template = "INSERT INTO score (Games_Played,Games_won, LWStreak, LLStreak, CStreak, CWStreak, CLStreak) values (?,?,?,?,?,?,?)";
-            statement = connection.prepareStatement(template);
-            
-            statement.setInt(1, gamesPlayed);
-            statement.setInt(2, gamesWon);
-            statement.setInt(3, longestWinningStreak);
-            statement.setInt(4, longestLosingStreak);
-            statement.setInt(5, currentStreak);
-            statement.setInt(6, currentWinningStreak);
-            statement.setInt(7, currentLosingStreak);
-            
-            statement.executeUpdate();
-            
-            //-------------------INSERT DATA INTO TIME TABLE-----------//
-            template = "INSERT INTO time (Time_Value, Date_Value) values (?,?)";
-            statement = connection.prepareStatement(template);
-            
-
-            for (int i = 0; i < bestTimes.size(); i++)
-            {
-                statement.setInt(1, bestTimes.get(i).getTimeValue());
-                statement.setDate(2, bestTimes.get(i).getDateValue());
-                
-                statement.executeUpdate();            
-            }
-
-            //---------------------------------------------------------//
-            
-            statement.close();
-            
-            // and then finally close connection
-            // connection.close();            
+            statement.close();      
         }
         catch(SQLException sqlex)
         {
