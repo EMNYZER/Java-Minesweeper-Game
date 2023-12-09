@@ -28,24 +28,15 @@ import javax.swing.border.TitledBorder;
 import minesweeper.Time;
 import minesweeper.TimeComparator;
 
-// This is the main controller class
-public class Game implements MouseListener, ActionListener, WindowListener
-{
+public class Game implements MouseListener, ActionListener, WindowListener{
     public static String dbPath;
-    // "playing" indicates whether a game is running (true) or not (false).
     private boolean playing; 
-
     private Board board;
-
     private UI gui;
-    
     private Score score;
         
-    //------------------------------------------------------------------//        
-
     public Game()
     {
-        // set db path
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -78,8 +69,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
         resumeGame();
     }
 
-    //-----------------Load Save Game (if any)--------------------------//
-    
     public void resumeGame()
     {
         if(board.checkSave())
@@ -92,19 +81,12 @@ public class Game implements MouseListener, ActionListener, WindowListener
             switch(option) 
             {
                 case JOptionPane.YES_OPTION:      
-      
-                    //load board's state
                     Pair p = board.loadSaveGame();
                     
-                    //set button's images
                     setButtonImages();
                     
-                    //load timer's value                                        
                     gui.setTimePassed((int)p.getKey());
-
-                    //load mines value
                     gui.setMines((int)p.getValue());
-                    
                     gui.startTimer();
                     
                     playing = true;
@@ -121,8 +103,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
         }
     }
 
-
-    //-------------------------------------------------//
     public void setButtonImages()
     {
         Cell cells[][] = board.getCells();
@@ -156,13 +136,9 @@ public class Game implements MouseListener, ActionListener, WindowListener
             }
         }
     }
-    
-    
-    //------------------------------------------------------------//
         
     public void createBoard()
     {
-        // Create a new board        
         int mines = 10;
 
         int r = 9;
@@ -171,8 +147,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
         this.board = new Board(mines, r, c);        
     }
     
-
-    //---------------------------------------------------------------//
     public void newGame()
     {                
         this.playing = false;        
@@ -184,7 +158,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
         gui.initGame();
         gui.setMines(board.getNumberOfMines());
     }
-    //------------------------------------------------------------------------------//
     
     public void restartGame()
     {
@@ -198,7 +171,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
         gui.setMines(board.getNumberOfMines());
     }
         
-    //------------------------------------------------------------------------------//    
     private void endGame()
     {
         playing = false;
@@ -206,9 +178,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
 
         score.save();
     }
-
-    
-    //-------------------------GAME WON AND GAME LOST ---------------------------------//
     
     public void gameWon()
     {
@@ -219,15 +188,9 @@ public class Game implements MouseListener, ActionListener, WindowListener
         
         gui.interruptTimer();
         endGame();
-        //----------------------------------------------------------------//
-        
         
         JDialog dialog = new JDialog(gui, Dialog.ModalityType.DOCUMENT_MODAL);
-        
-        //------MESSAGE-----------//
         JLabel message = new JLabel("Congratulations, you won the game!", SwingConstants.CENTER);
-                
-        //-----STATISTICS-----------//
         JPanel statistics = new JPanel();
         statistics.setLayout(new GridLayout(6,1,0,10));
         
@@ -266,9 +229,6 @@ public class Game implements MouseListener, ActionListener, WindowListener
         
         Border loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);        
         statistics.setBorder(loweredetched);
-        
-        
-        //--------BUTTONS----------//
         JPanel buttons = new JPanel();
         buttons.setLayout(new GridLayout(1,2,10,0));
         
@@ -284,13 +244,10 @@ public class Game implements MouseListener, ActionListener, WindowListener
             dialog.dispose();            
             newGame();
         });        
-        
-        
+                
         buttons.add(exit);
         buttons.add(playAgain);
-        
-        //--------DIALOG-------------//
-        
+
         JPanel c = new JPanel();
         c.setLayout(new BorderLayout(20,20));
         c.add(message, BorderLayout.NORTH);
@@ -326,14 +283,8 @@ public class Game implements MouseListener, ActionListener, WindowListener
         
         endGame();
         
-        //----------------------------------------------------------------//
-
         JDialog dialog = new JDialog(gui, Dialog.ModalityType.DOCUMENT_MODAL);
-        
-        //------MESSAGE-----------//
         JLabel message = new JLabel("Sorry, you lost this game. Better luck next time!", SwingConstants.CENTER);
-                
-        //-----STATISTICS-----------//
         JPanel statistics = new JPanel();
         statistics.setLayout(new GridLayout(5,1,0,10));
         

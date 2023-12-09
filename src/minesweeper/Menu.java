@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 
 public class Menu {
     
-        JFrame frame = new JFrame("Aselole Joss");
+        JFrame frame = new JFrame("Minesweeper");
         ImageIcon backgroundIcon = new ImageIcon("asset/BG2.jpg");
         JLabel backgroundLabel = new JLabel(backgroundIcon);
 
