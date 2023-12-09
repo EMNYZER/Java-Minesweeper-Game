@@ -41,7 +41,6 @@ public class UI extends JFrame {
         setLocation(FRAME_LOC_X, FRAME_LOC_Y);
         JPanel gameBoard;
         JPanel tmPanel;
-        JPanel scorePanel;
         gameBoard = new JPanel();
         gameBoard.setLayout(new GridLayout(rows, cols, 0, 0));
         for (int y = 0; y < rows; y++) {
