@@ -12,6 +12,7 @@ import javafx.util.Pair;
 
 public class Board 
 {
+    private Connection connection;
     private int numberOfMines;	
     private Cell cells[][];
 
@@ -20,6 +21,8 @@ public class Board
 
         public Board(int numberOfMines, int r, int c)
     {
+        this.connection = DatabaseConnection.getConnection(); 
+
         this.rows = r;
         this.cols = c;
         this.numberOfMines = numberOfMines;
@@ -112,16 +115,12 @@ public class Board
 
     public boolean checkSave()
     {
-        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         
         boolean saveExists = false;
 
         try {
-            String dbURL = Game.dbPath; 
-            
-            connection = DriverManager.getConnection(dbURL); 
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT * FROM game_state");
             
@@ -132,7 +131,7 @@ public class Board
             
             resultSet.close();
             statement.close();
-            connection.close();            
+            // connection.close();            
             
             return saveExists;
         }
@@ -145,14 +144,10 @@ public class Board
     
     public Pair loadSaveGame()
     {
-        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
 
         try {
-            String dbURL = Game.dbPath; 
-            
-            connection = DriverManager.getConnection(dbURL); 
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT * FROM cell");
 
@@ -177,7 +172,7 @@ public class Board
             deleteSavedGame();
             resultSet.close();
             statement.close();
-            connection.close();
+            // connection.close();
 
             return p;
         }
@@ -190,12 +185,9 @@ public class Board
     
     public void deleteSavedGame()
     {
-        Connection connection = null;
         PreparedStatement statement = null;
         
         try {
-            String dbURL = Game.dbPath; 
-            connection = DriverManager.getConnection(dbURL); 
             String template = "DELETE FROM game_state"; 
             statement = connection.prepareStatement(template);
             statement.executeUpdate();
@@ -204,7 +196,7 @@ public class Board
             statement.executeUpdate();
             
             statement.close();
-            connection.close();            
+            // connection.close();            
         }
         catch(SQLException sqlex)
         {
@@ -214,14 +206,10 @@ public class Board
 
     public void saveGame(int timer, int mines)
     {
-        Connection connection = null;
         PreparedStatement statement = null;
         
         try {
-            String dbURL = Game.dbPath; 
-            
-            connection = DriverManager.getConnection(dbURL); 
-
+        
             String template = "INSERT INTO cell (Content, Mine, Surrounding_Mine) values (?,?,?)";
             statement = connection.prepareStatement(template);
 
@@ -244,7 +232,7 @@ public class Board
 
             statement.executeUpdate();
             statement.close();
-            connection.close();            
+            // connection.close();            
         }
         catch(SQLException sqlex)
         {

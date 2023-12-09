@@ -2,34 +2,16 @@ package minesweeper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.security.CodeSource;
+import java.awt.event.*;
 import java.util.ArrayList;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
-
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.border.*;
+import java.sql.*;
 import javafx.util.Pair;
-import javax.swing.border.TitledBorder;
-import minesweeper.Time;
-import minesweeper.TimeComparator;
+import java.util.logging.*;
+import minesweeper.*;
 
 public class Game implements MouseListener, ActionListener, WindowListener{
-    public static String dbPath;
+    private Connection connection;
     private boolean playing; 
     private Board board;
     private UI gui;
@@ -37,18 +19,8 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         
     public Game()
     {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        this.connection = DatabaseConnection.getConnection();
 
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mineswepeer", "root", "");
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        
         score = new Score();
         score.populate();
         
@@ -80,7 +52,8 @@ public class Game implements MouseListener, ActionListener, WindowListener{
 
             switch(option) 
             {
-                case JOptionPane.YES_OPTION:      
+                case JOptionPane.YES_OPTION:
+
                     Pair p = board.loadSaveGame();
                     
                     setButtonImages();

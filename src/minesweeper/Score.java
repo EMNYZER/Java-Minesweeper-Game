@@ -15,6 +15,8 @@ import java.util.Comparator;
 
 public class Score
 {
+    private Connection connection;
+
     ArrayList<Time> bestTimes;
     
     int gamesPlayed;
@@ -30,6 +32,8 @@ public class Score
     
     public Score()
     {
+        this.connection = DatabaseConnection.getConnection();
+
         gamesPlayed = gamesWon = currentStreak = longestLosingStreak = longestWinningStreak = currentWinningStreak = currentLosingStreak = 0;
         bestTimes = new ArrayList();
     }
@@ -151,14 +155,11 @@ public class Score
     //------------POPULATE FROM DATABASE------------//
     public boolean populate()
     {
-        Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
 
         try {
-            String dbURL = Game.dbPath; 
 
-            connection = DriverManager.getConnection(dbURL); 
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT * FROM Score");
 
@@ -202,7 +203,7 @@ public class Score
             
             
             // and then finally close connection
-            connection.close();            
+            // connection.close();            
             
             return true;
         }
@@ -216,16 +217,10 @@ public class Score
     
     public void save()
     {
-        Connection connection = null;
         PreparedStatement statement = null;
         
-
         try {
-            String dbURL = Game.dbPath; 
-            
-            connection = DriverManager.getConnection(dbURL); 
-
-            
+           
             //----------EMPTY SCORE TABLE------//
             String template = "DELETE FROM score"; 
             statement = connection.prepareStatement(template);
@@ -268,7 +263,7 @@ public class Score
             statement.close();
             
             // and then finally close connection
-            connection.close();            
+            // connection.close();            
         }
         catch(SQLException sqlex)
         {

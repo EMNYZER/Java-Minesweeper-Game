@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class ListPlayer {
+    private Connection connection;
     JFrame frame = new JFrame("Let's Play!!");
     ImageIcon backgroundIcon = new ImageIcon("asset/BG1.jpg");
     JLabel backgroundLabel = new JLabel(backgroundIcon);
@@ -24,12 +25,13 @@ public class ListPlayer {
     JButton savename = new JButton("Add Player");
 
     //
-    Connection conn = null;
+
     PreparedStatement ps = null;
     Statement stmt = null;
     ResultSet rs = null;
 
     ListPlayer() {
+        this.connection = DatabaseConnection.getConnection();
         nickname.setPreferredSize(new Dimension(250, 30));
 
         loadPlayerList();
@@ -83,24 +85,23 @@ public class ListPlayer {
     private void addPlayerButton(ActionEvent evt) {
         String username = nickname.getText();
 
-        // Gunakan try-with-resources untuk otomatis menutup koneksi
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/minesweeper", "root", "");
-                PreparedStatement checkStatement = conn.prepareStatement("SELECT * FROM users WHERE nama = ?");
-                PreparedStatement insertStatement = conn.prepareStatement("INSERT INTO users (nama) VALUES (?)")) {
+        try (
+                PreparedStatement checkStatement = connection.prepareStatement("SELECT * FROM users WHERE nama = ?");
+                PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO users (nama) VALUES (?)")) {
 
-            // Set parameter untuk query SELECT
             checkStatement.setString(1, username);
             ResultSet rs = checkStatement.executeQuery();
 
             if (rs.next()) {
                 JOptionPane.showMessageDialog(null, "Username sudah terdaftar!");
             } else {
-                // Set parameter untuk query INSERT
+
                 insertStatement.setString(1, username);
                 int result = insertStatement.executeUpdate();
 
                 if (result > 0) {
                     JOptionPane.showMessageDialog(null, "Player Berhasil Ditambahkan");
+                    System.out.println("Berhasil ditambah");
                     loadPlayerList();
                 } else {
                     JOptionPane.showMessageDialog(null, "Gagal menambahkan data!");
@@ -115,68 +116,37 @@ public class ListPlayer {
     private void loadPlayerList() {
         playerListModel.clear();
 
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/minesweeper", "root", "");
-            stmt = conn.createStatement();
-
-            String query = "SELECT nama FROM users";
-            rs = stmt.executeQuery(query);
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT nama FROM users")) {
 
             while (rs.next()) {
                 playerListModel.addElement(rs.getString("nama"));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
     private int getPlayerId(String playerName) {
-
         int playerId = 0;
 
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/minesweeper", "root", "");
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT id FROM users WHERE nama=?")) {
 
-            String query = "SELECT id FROM users WHERE nama=?";
-            ps = conn.prepareStatement(query);
             ps.setString(1, playerName);
-
-            rs = ps.executeQuery();
-
-            if (rs.next()) {
-                playerId = rs.getInt("id");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    playerId = rs.getInt("id");
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                if (rs != null)
-                    rs.close();
-                if (ps != null)
-                    ps.close();
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         }
         return playerId;
     }
 
     private void openPlayWindow() {
-        // Implementasikan logika untuk membuka jendela bermain dengan membawa id_player
-        // Gantilah dengan logika sesuai kebutuhan Anda
         frame.dispose();
         new Game();
     }
