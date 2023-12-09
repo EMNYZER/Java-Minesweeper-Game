@@ -1,0 +1,12 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Program Files\\Java\\javafx-sdk-21.0.1\\lib\\javafx.base.jar",
+        "Connector/mysql-connector-java-8.0.30.jar",
+        "Libs/commons-lang-2.6.jar",
+        "Libs/commons-logging-1.1.1.jar",
+        "Libs/hsqldb-2.3.1.jar",
+        "Libs/jackcess-2.1.6.jar",
+        "Libs/ucanaccess-4.0.1.jar"
+    ]
+}
