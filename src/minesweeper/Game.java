@@ -256,8 +256,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         Border loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);        
         statistics.setBorder(loweredetched);
         
-        
-        //--------BUTTONS----------//
         JPanel buttons = new JPanel();
         buttons.setLayout(new GridLayout(1,3,2,0));
         
@@ -279,12 +277,9 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             newGame();
         });        
         
-        
         buttons.add(exit);
         buttons.add(restart);
         buttons.add(playAgain);
-        
-        //--------DIALOG-------------//
         
         JPanel c = new JPanel();
         c.setLayout(new BorderLayout(20,20));
@@ -311,15 +306,10 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         dialog.setVisible(true);        
     }
     
-    
-    //--------------------------------SCORE BOARD--------------------------------------//
     public void showScore()
     {
-        //----------------------------------------------------------------//
                 
         JDialog dialog = new JDialog(gui, Dialog.ModalityType.DOCUMENT_MODAL);
-
-        //-----BEST TIMES--------//
         
         JPanel bestTimes = new JPanel();
         bestTimes.setLayout(new GridLayout(5,1));
@@ -421,11 +411,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         dialog.setLocationRelativeTo(gui);
         dialog.setVisible(true);                        
     }
-    
-    //------------------------------------------------------------------------------//
 	
-        
-    // Shows the "solution" of the game.
     private void showAll()
     {
         String cellSolution;
@@ -439,20 +425,13 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             {
                 cellSolution = cells[x][y].getContent();
 
-                // Is the cell still unrevealed
                 if( cellSolution.equals("") ) 
                 {
                     buttons[x][y].setIcon(null);
-                    
-                    // Get Neighbours
                     cellSolution = Integer.toString(cells[x][y].getSurroundingMines());
-
-                    // Is it a mine?
                     if(cells[x][y].getMine()) 
                     {
                         cellSolution = "M";
-                        
-                        //mine
                         buttons[x][y].setIcon(gui.getIconMine());
                         buttons[x][y].setBackground(Color.lightGray);                        
                     }
@@ -471,11 +450,8 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                         }
                     }
                 }
-
-                // This cell is already flagged!
                 else if( cellSolution.equals("F") ) 
                 {
-                    // Is it correctly flagged?
                     if(!cells[x][y].getMine()) 
                     {
                         buttons[x][y].setBackground(Color.orange);
@@ -520,8 +496,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         return isFinished;
     }
 
- 
-    //Check the game to see if its finished or not
     private void checkGame()
     {		
         if(isFinished()) 
@@ -529,14 +503,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             gameWon();
         }
     }
-   
-    //----------------------------------------------------------------------/
-       
-    
-    /*
-     * If a player clicks on a zero, all surrounding cells ("neighbours") must revealed.
-     * This method is recursive: if a neighbour is also a zero, his neighbours must also be revealed.
-     */
+
     public void findZeroes(int xCo, int yCo)
     {
         int neighbours;
@@ -544,35 +511,24 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         Cell cells[][] = board.getCells();
         JButton buttons[][] = gui.getButtons();
 
-        // Columns
         for(int x = board.makeValidCoordinateX(xCo - 1) ; x <= board.makeValidCoordinateX(xCo + 1) ; x++) 
         {			
-            // Rows
             for(int y = board.makeValidCoordinateY(yCo - 1) ; y <= board.makeValidCoordinateY(yCo + 1) ; y++) 
             {
-                // Only unrevealed cells need to be revealed.
                 if(cells[x][y].getContent().equals("")) 
                 {
-                    // Get the neighbours of the current (neighbouring) cell.
                     neighbours = cells[x][y].getSurroundingMines();
-
-                    // Reveal the neighbours of the current (neighbouring) cell
                     cells[x][y].setContent(Integer.toString(neighbours));
-
                     if (!cells[x][y].getMine())
                         buttons[x][y].setIcon(null);                        
-                    
-                    // Is this (neighbouring) cell a "zero" cell itself?
                     if(neighbours == 0)
                     {                        
-                        // Yes, give it a special color and recurse!
                         buttons[x][y].setBackground(Color.lightGray);
                         buttons[x][y].setText("");
                         findZeroes(x, y);
                     }
                     else
                     {
-                        // No, give it a boring gray color.
                         buttons[x][y].setBackground(Color.lightGray);
                         buttons[x][y].setText(Integer.toString(neighbours));
                         gui.setTextColor(buttons[x][y]);                        
@@ -581,8 +537,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             }
         }
     }
-    //-----------------------------------------------------------------------------//
-    //This function is called when clicked on closed button or exit
+
     @Override
     public void windowClosing(WindowEvent e) 
     {
