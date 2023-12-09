@@ -12,7 +12,7 @@ import java.sql.*;
 public class ListPlayer {
     private Connection connection;
     JFrame frame = new JFrame("Let's Play!!");
-    ImageIcon backgroundIcon = new ImageIcon("asset/BG1.jpg");
+    ImageIcon backgroundIcon = new ImageIcon("src\\resources\\BG2.jpg");
     JLabel backgroundLabel = new JLabel(backgroundIcon);
 
     JPanel listPanel = new JPanel();

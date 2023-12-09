@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 public class Menu {
     
         JFrame frame = new JFrame("Minesweeper");
-        ImageIcon backgroundIcon = new ImageIcon("asset/BG2.jpg");
+        ImageIcon backgroundIcon = new ImageIcon("src\\resources\\BG2.jpg");
         JLabel backgroundLabel = new JLabel(backgroundIcon);
 
         JPanel menu = new JPanel();
