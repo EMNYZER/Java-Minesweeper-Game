@@ -4,13 +4,11 @@ import static java.lang.Math.ceil;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-import java.util.Comparator;
 
 
 public class Score
@@ -36,7 +34,6 @@ public class Score
         this.connection = DatabaseConnection.getConnection();
         this.playerId = playerId;
         gamesPlayed = gamesWon = currentStreak = longestLosingStreak = longestWinningStreak = currentWinningStreak = currentLosingStreak = 0;
-        bestTimes = new ArrayList();
     }
     
     public void setPlayerId(int playerId) {
