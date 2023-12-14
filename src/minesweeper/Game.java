@@ -333,7 +333,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
 
         bestTimes.setBorder(b);
                 
-        //-----STATISTICS-----------//
         JPanel statistics = new JPanel();
         
         statistics.setLayout(new GridLayout(6,1,0,10));        
@@ -356,8 +355,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         Border loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);        
         statistics.setBorder(loweredetched);
         
-        
-        //--------BUTTONS----------//
         JPanel buttons = new JPanel();
         buttons.setLayout(new GridLayout(1,2,10,0));
         
@@ -378,7 +375,8 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             {
                 case JOptionPane.YES_OPTION:      
 
-                    score.resetScore();
+                    score.updateGamesPlayed(playerId);
+                    score.resetScore(playerId);
                     score.save(playerId);
                     dialog.dispose();
                     showScore();
@@ -477,16 +475,12 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         {
             for( int y = 0 ; y < board.getRows() ; y++ ) 
             {
-                // If a game is solved, the content of each Cell should match the value of its surrounding mines
                 cellSolution = Integer.toString(cells[x][y].getSurroundingMines());
                 
                 if(cells[x][y].getMine()) 
                     cellSolution = "F";
-
-                // Compare the player's "answer" to the solution.
                 if(!cells[x][y].getContent().equals(cellSolution))
                 {
-                    //This cell is not solved yet
                     isFinished = false;
                     break;
                 }
@@ -543,7 +537,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
     {
         if (playing)
         {
-            ImageIcon question = new ImageIcon(getClass().getResource("src\\resources\\question.png"));      
+            ImageIcon question = new ImageIcon(getClass().getResource("/resources/question.png"));
 
             Object[] options = {"Save","Don't Save","Cancel"};
 
@@ -572,7 +566,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                        @Override
                        protected Void doInBackground() throws Exception 
                        {
-                            // board.saveGame(gui.getTimePassed(), gui.getMines(), playerId);                
                             return null;
                        }
                        

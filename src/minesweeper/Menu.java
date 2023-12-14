@@ -18,7 +18,6 @@ public class Menu {
 
     JPanel menu = new JPanel();
     JButton play = new JButton("Play");
-    JButton score = new JButton("Score");
     JButton exit = new JButton("Exit");
 
     Menu() {
@@ -30,13 +29,6 @@ public class Menu {
             public void actionPerformed(ActionEvent e) {
                 new ListPlayer();
                 frame.dispose();
-            }
-        });
-
-        score.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame, "Score button clicked");
             }
         });
 
@@ -53,7 +45,6 @@ public class Menu {
         });
 
         menu.add(play);
-        menu.add(score);
         menu.add(exit);
 
         frame.setSize(backgroundIcon.getIconWidth() - 200, backgroundIcon.getIconHeight() - 200);

@@ -2,7 +2,6 @@ package minesweeper;
 
 import static java.lang.Math.ceil;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-import java.util.Comparator;
 
 
 public class Score
@@ -133,10 +131,59 @@ public class Score
     }    
     
     
-    public void resetScore()
-    {
-        gamesPlayed = gamesWon = currentStreak = longestLosingStreak = longestWinningStreak = currentWinningStreak = currentLosingStreak = 0;
+    public void resetScore(int playerId) {
+        PreparedStatement statement = null;
+        try {
+            String resetQuery = "UPDATE score SET Games_Played = 0, Games_won = 0, LWStreak = 0, LLStreak = 0, CStreak = 0, CWStreak = 0, CLStreak = 0 WHERE Id = ?";
+            statement = connection.prepareStatement(resetQuery);
+            statement.setInt(1, playerId);
+            statement.executeUpdate();
+    
+            longestLosingStreak = 0;
+            currentStreak = 0;
+            currentLosingStreak= 0;
+            gamesPlayed = 0;
+            
+            statement.close();
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+        }
     }
+    
+    public void updateGamesPlayed(int playerId) {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String countQuery = "SELECT COUNT(*) AS gameCount FROM score WHERE Id = ?";
+            statement = connection.prepareStatement(countQuery);
+            statement.setInt(1, playerId);
+            resultSet = statement.executeQuery();
+    
+            if (resultSet.next()) {
+                int gameCount = resultSet.getInt("gameCount");
+    
+                // Jika Games_Played masih 0, atur nilai menjadi 1
+                if (gameCount > 0) {
+                    String updateQuery = "UPDATE score SET Games_Played = ? WHERE Id = ?";
+                    statement = connection.prepareStatement(updateQuery);
+                    statement.setInt(1, gameCount);
+                    statement.setInt(2, playerId);
+                    statement.executeUpdate();
+                } else {
+                    String resetGamesPlayedQuery = "UPDATE score SET Games_Played = 1 WHERE Id = ?";
+                    statement = connection.prepareStatement(resetGamesPlayedQuery);
+                    statement.setInt(1, playerId);
+                    statement.executeUpdate();
+                }
+            }
+    
+            resultSet.close();
+            statement.close();
+        } catch (SQLException sqlex) {
+            sqlex.printStackTrace();
+        }
+    }
+    
     
     
     
@@ -191,14 +238,33 @@ public class Score
     }
 
     
-    public void save(int playerId)
-    {
+    public void save(int playerId){
         PreparedStatement statement = null;
-        
         try {          
-            String scoreTemplate = "INSERT INTO score (Id, Games_Played, Games_won, LWStreak, LLStreak, CStreak, CWStreak, CLStreak) VALUES (?,?,?,?,?,?,?,?)";
-            statement = connection.prepareStatement(scoreTemplate);
+        String checkIfExists = "SELECT COUNT(*) AS count FROM score WHERE Id = ?";
+        statement = connection.prepareStatement(checkIfExists);
+        statement.setInt(1, playerId);
+        ResultSet rs = statement.executeQuery();
+        rs.next();
+        int count = rs.getInt("count");
+        statement.close();
         
+        if (count > 0) {
+            String updateScore = "UPDATE score SET Games_Played=?, Games_won=?, LWStreak=?, LLStreak=?, CStreak=?, CWStreak=?, CLStreak=? WHERE Id=?";
+            statement = connection.prepareStatement(updateScore);
+            statement.setInt(1, gamesPlayed);
+            statement.setInt(2, gamesWon);
+            statement.setInt(3, longestWinningStreak);
+            statement.setInt(4, longestLosingStreak);
+            statement.setInt(5, currentStreak);
+            statement.setInt(6, currentWinningStreak);
+            statement.setInt(7, currentLosingStreak);
+            statement.setInt(8, playerId);
+            statement.executeUpdate();
+            statement.close();
+        } else {
+            String insertScore = "INSERT INTO score (Id, Games_Played, Games_won, LWStreak, LLStreak, CStreak, CWStreak, CLStreak) VALUES (?,?,?,?,?,?,?,?)";
+            statement = connection.prepareStatement(insertScore);
             statement.setInt(1, playerId);
             statement.setInt(2, gamesPlayed);
             statement.setInt(3, gamesWon);
@@ -207,15 +273,12 @@ public class Score
             statement.setInt(6, currentStreak);
             statement.setInt(7, currentWinningStreak);
             statement.setInt(8, currentLosingStreak);
-        
             statement.executeUpdate();
-            statement.close();      
+            statement.close();
+            }
+        } catch(SQLException sqlex) {
+        sqlex.printStackTrace();
         }
-        catch(SQLException sqlex)
-        {
-            sqlex.printStackTrace();
-        }
-        
     }
 
 }
