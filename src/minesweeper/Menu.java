@@ -12,83 +12,60 @@ import java.awt.event.ActionListener;
 
 public class Menu {
     
-        JFrame frame = new JFrame("Minesweeper");
-        ImageIcon backgroundIcon = new ImageIcon("src\\resources\\BG2.jpg");
-        JLabel backgroundLabel = new JLabel(backgroundIcon);
+    JFrame frame = new JFrame("Minesweeper");
+    ImageIcon backgroundIcon = new ImageIcon("src\\resources\\BG2.jpg");
+    JLabel backgroundLabel = new JLabel(backgroundIcon);
 
-        JPanel menu = new JPanel();
-        JButton play = new JButton("Play");
-        JButton score = new JButton("Score");
-        JButton exit = new JButton("Exit");
+    JPanel menu = new JPanel();
+    JButton play = new JButton("Play");
+    JButton exit = new JButton("Exit");
 
-        Menu() {
-            menu.setOpaque(false);
-            menu.setBorder(new EmptyBorder(200, 200, 200, 200));
+    Menu() {
+        menu.setOpaque(false);
+        menu.setBorder(new EmptyBorder(200, 200, 200, 200));
 
-            play.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    new ListPlayer();
-                    frame.dispose();
+        play.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new ListPlayer();
+                frame.dispose();
+            }
+        });
+
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showConfirmDialog(frame, "Do you really want to exit?",
+                        "Confirm Exit",
+                        JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION) {
+                    System.exit(0);
                 }
-            });
+            }
+        });
 
-            score.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Add your Score button action here
-                    JOptionPane.showMessageDialog(frame, "Score button clicked");
-                }
-            });
+        menu.add(play);
+        menu.add(exit);
 
-            exit.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Add your Exit button action here
-                    int choice = JOptionPane.showConfirmDialog(frame, "Do you really want to exit?",
-                            "Confirm Exit",
-                            JOptionPane.YES_NO_OPTION);
-                    if (choice == JOptionPane.YES_OPTION) {
-                        System.exit(0);
-                    }
-                }
-            });
-
-            menu.add(play);
-            menu.add(score);
-            menu.add(exit);
-
-            // Set up the window properties
-            frame.setSize(backgroundIcon.getIconWidth() - 200, backgroundIcon.getIconHeight() - 200);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setContentPane(backgroundLabel);
-            frame.setLayout(new BorderLayout());
-            frame.setResizable(false);
-            frame.setVisible(true);
-            frame.add(menu, BorderLayout.CENTER);
-
-        }
-        public void playBackgroundMusic(String filePath) {
-            try {
-                // Mengambil URL file musik
-                URL url = new File(filePath).toURI().toURL();
-    
-                // Membuat AudioInputStream untuk file musik
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
-    
-                // Mendapatkan Clip dari AudioSystem
-                Clip clip = AudioSystem.getClip();
-    
-                // Membuka AudioInputStream ke Clip
-                clip.open(audioInputStream);
-    
-                // Mengulang pemutaran
-                clip.loop(Clip.LOOP_CONTINUOUSLY);
-    
-                // Memulai pemutaran
-                clip.start();
-            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                e.printStackTrace();
+        frame.setSize(backgroundIcon.getIconWidth() - 200, backgroundIcon.getIconHeight() - 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setContentPane(backgroundLabel);
+        frame.setLayout(new BorderLayout());
+        frame.setResizable(false);
+        frame.setVisible(true);
+        frame.add(menu, BorderLayout.CENTER);
     }
+
+    public void playBackgroundMusic(String filePath) {
+        try {
+            URL url = new File(filePath).toURI().toURL();
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
         }
     }
+}

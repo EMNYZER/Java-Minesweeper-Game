@@ -12,16 +12,18 @@ import minesweeper.*;
 
 public class Game implements MouseListener, ActionListener, WindowListener{
     private Connection connection;
+    private int playerId;
     private boolean playing; 
     private Board board;
     private UI gui;
     private Score score;
         
-    public Game()
+    public Game(int playerId)
     {
         this.connection = DatabaseConnection.getConnection();
+        this.playerId = playerId;
 
-        score = new Score();
+        score = new Score(playerId);
         score.populate();
         
         UI.setLook("Nimbus");
@@ -38,44 +40,9 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         gui.setIcons();        
         gui.hideAll();
         
-        resumeGame();
     }
 
-    public void resumeGame()
-    {
-        if(board.checkSave())
-        {
-            ImageIcon question = new ImageIcon(getClass().getResource("/resources/question.png"));      
-
-            int option = JOptionPane.showOptionDialog(null, "Do you want to continue your saved game?", 
-                            "Saved Game Found", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, question,null,null);
-
-            switch(option) 
-            {
-                case JOptionPane.YES_OPTION:
-
-                    Pair p = board.loadSaveGame();
-                    
-                    setButtonImages();
-                    
-                    gui.setTimePassed((int)p.getKey());
-                    gui.setMines((int)p.getValue());
-                    gui.startTimer();
-                    
-                    playing = true;
-                    break;
-
-                case JOptionPane.NO_OPTION:
-                    board.deleteSavedGame();
-                    break;
-                    
-                case JOptionPane.CLOSED_OPTION:
-                    board.deleteSavedGame();
-                    break;
-            }
-        }
-    }
-
+    
     public void setButtonImages()
     {
         Cell cells[][] = board.getCells();
@@ -117,7 +84,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         int r = 9;
         int c = 9;
                 
-        this.board = new Board(mines, r, c);        
+        this.board = new Board(mines, r, c, playerId);        
     }
     
     public void newGame()
@@ -149,7 +116,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         playing = false;
         showAll();
 
-        score.save();
+        score.save(playerId);
     }
     
     public void gameWon()
@@ -289,8 +256,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         Border loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);        
         statistics.setBorder(loweredetched);
         
-        
-        //--------BUTTONS----------//
         JPanel buttons = new JPanel();
         buttons.setLayout(new GridLayout(1,3,2,0));
         
@@ -312,12 +277,9 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             newGame();
         });        
         
-        
         buttons.add(exit);
         buttons.add(restart);
         buttons.add(playAgain);
-        
-        //--------DIALOG-------------//
         
         JPanel c = new JPanel();
         c.setLayout(new BorderLayout(20,20));
@@ -344,15 +306,10 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         dialog.setVisible(true);        
     }
     
-    
-    //--------------------------------SCORE BOARD--------------------------------------//
     public void showScore()
     {
-        //----------------------------------------------------------------//
                 
         JDialog dialog = new JDialog(gui, Dialog.ModalityType.DOCUMENT_MODAL);
-
-        //-----BEST TIMES--------//
         
         JPanel bestTimes = new JPanel();
         bestTimes.setLayout(new GridLayout(5,1));
@@ -376,7 +333,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
 
         bestTimes.setBorder(b);
                 
-        //-----STATISTICS-----------//
         JPanel statistics = new JPanel();
         
         statistics.setLayout(new GridLayout(6,1,0,10));        
@@ -399,8 +355,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         Border loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);        
         statistics.setBorder(loweredetched);
         
-        
-        //--------BUTTONS----------//
         JPanel buttons = new JPanel();
         buttons.setLayout(new GridLayout(1,2,10,0));
         
@@ -421,8 +375,9 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             {
                 case JOptionPane.YES_OPTION:      
 
-                    score.resetScore();
-                    score.save();
+                    score.updateGamesPlayed(playerId);
+                    score.resetScore(playerId);
+                    score.save(playerId);
                     dialog.dispose();
                     showScore();
                     break;
@@ -454,11 +409,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         dialog.setLocationRelativeTo(gui);
         dialog.setVisible(true);                        
     }
-    
-    //------------------------------------------------------------------------------//
 	
-        
-    // Shows the "solution" of the game.
     private void showAll()
     {
         String cellSolution;
@@ -472,20 +423,13 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             {
                 cellSolution = cells[x][y].getContent();
 
-                // Is the cell still unrevealed
                 if( cellSolution.equals("") ) 
                 {
                     buttons[x][y].setIcon(null);
-                    
-                    // Get Neighbours
                     cellSolution = Integer.toString(cells[x][y].getSurroundingMines());
-
-                    // Is it a mine?
                     if(cells[x][y].getMine()) 
                     {
                         cellSolution = "M";
-                        
-                        //mine
                         buttons[x][y].setIcon(gui.getIconMine());
                         buttons[x][y].setBackground(Color.lightGray);                        
                     }
@@ -504,11 +448,8 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                         }
                     }
                 }
-
-                // This cell is already flagged!
                 else if( cellSolution.equals("F") ) 
                 {
-                    // Is it correctly flagged?
                     if(!cells[x][y].getMine()) 
                     {
                         buttons[x][y].setBackground(Color.orange);
@@ -534,16 +475,12 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         {
             for( int y = 0 ; y < board.getRows() ; y++ ) 
             {
-                // If a game is solved, the content of each Cell should match the value of its surrounding mines
                 cellSolution = Integer.toString(cells[x][y].getSurroundingMines());
                 
                 if(cells[x][y].getMine()) 
                     cellSolution = "F";
-
-                // Compare the player's "answer" to the solution.
                 if(!cells[x][y].getContent().equals(cellSolution))
                 {
-                    //This cell is not solved yet
                     isFinished = false;
                     break;
                 }
@@ -553,8 +490,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         return isFinished;
     }
 
- 
-    //Check the game to see if its finished or not
     private void checkGame()
     {		
         if(isFinished()) 
@@ -562,14 +497,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             gameWon();
         }
     }
-   
-    //----------------------------------------------------------------------/
-       
-    
-    /*
-     * If a player clicks on a zero, all surrounding cells ("neighbours") must revealed.
-     * This method is recursive: if a neighbour is also a zero, his neighbours must also be revealed.
-     */
+
     public void findZeroes(int xCo, int yCo)
     {
         int neighbours;
@@ -577,35 +505,24 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         Cell cells[][] = board.getCells();
         JButton buttons[][] = gui.getButtons();
 
-        // Columns
         for(int x = board.makeValidCoordinateX(xCo - 1) ; x <= board.makeValidCoordinateX(xCo + 1) ; x++) 
         {			
-            // Rows
             for(int y = board.makeValidCoordinateY(yCo - 1) ; y <= board.makeValidCoordinateY(yCo + 1) ; y++) 
             {
-                // Only unrevealed cells need to be revealed.
                 if(cells[x][y].getContent().equals("")) 
                 {
-                    // Get the neighbours of the current (neighbouring) cell.
                     neighbours = cells[x][y].getSurroundingMines();
-
-                    // Reveal the neighbours of the current (neighbouring) cell
                     cells[x][y].setContent(Integer.toString(neighbours));
-
                     if (!cells[x][y].getMine())
                         buttons[x][y].setIcon(null);                        
-                    
-                    // Is this (neighbouring) cell a "zero" cell itself?
                     if(neighbours == 0)
                     {                        
-                        // Yes, give it a special color and recurse!
                         buttons[x][y].setBackground(Color.lightGray);
                         buttons[x][y].setText("");
                         findZeroes(x, y);
                     }
                     else
                     {
-                        // No, give it a boring gray color.
                         buttons[x][y].setBackground(Color.lightGray);
                         buttons[x][y].setText(Integer.toString(neighbours));
                         gui.setTextColor(buttons[x][y]);                        
@@ -614,14 +531,13 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             }
         }
     }
-    //-----------------------------------------------------------------------------//
-    //This function is called when clicked on closed button or exit
+
     @Override
     public void windowClosing(WindowEvent e) 
     {
         if (playing)
         {
-            ImageIcon question = new ImageIcon(getClass().getResource("/resources/question.png"));      
+            ImageIcon question = new ImageIcon(getClass().getResource("/resources/question.png"));
 
             Object[] options = {"Save","Don't Save","Cancel"};
 
@@ -630,11 +546,10 @@ public class Game implements MouseListener, ActionListener, WindowListener{
 
             switch(quit) 
             {
-                //save
                 case JOptionPane.YES_OPTION:
                     
                     gui.interruptTimer();
-                    score.save();
+                    score.save(playerId);
                     
                     JDialog dialog = new JDialog(gui, Dialog.ModalityType.DOCUMENT_MODAL);
                     JPanel panel = new JPanel();
@@ -651,7 +566,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                        @Override
                        protected Void doInBackground() throws Exception 
                        {
-                            board.saveGame(gui.getTimePassed(), gui.getMines());                
                             return null;
                        }
                        
@@ -667,10 +581,9 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                     System.exit(0);
                     break;
                 
-                //dont save                    
                 case JOptionPane.NO_OPTION:
                     score.incGamesPlayed();
-                    score.save();
+                    score.save(playerId);
                     System.exit(0);
                     break;
                     
@@ -680,8 +593,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         else
             System.exit(0);
     }
-    
-    //-----------------------------------------------------------------------//
 
     @Override
     public void actionPerformed(ActionEvent e) {        
@@ -701,16 +612,14 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                 switch(startNew) 
                 {
                     case JOptionPane.YES_OPTION:      
-                        
-                        // Initialize the new game.
                         newGame();
                         score.incGamesPlayed();
-                        score.save();
+                        score.save(playerId);
                         break;
 
                     case JOptionPane.NO_OPTION: 
                         score.incGamesPlayed();   
-                        score.save();
+                        score.save(playerId);
                         restartGame();
                         break;
                     
@@ -718,27 +627,19 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                 }
             }
         }
-        
         else if (menuItem.getName().equals("Exit"))
         {
             windowClosing(null);
         }
-        
-        //Statistics
         else
         {
             showScore();
         }        
     }
     
-    
-    //--------------------------------------------------------------------------//
-        
-    //Mouse Click Listener
     @Override
     public void mouseClicked(MouseEvent e)
     {
-        // start timer on first click
         if(!playing)
         {
             gui.startTimer();
@@ -747,30 +648,25 @@ public class Game implements MouseListener, ActionListener, WindowListener{
         
         if (playing)
         {
-            //Get the button's name
             JButton button = (JButton)e.getSource();
-
-            // Get coordinates (button.getName().equals("x,y")).
             String[] co = button.getName().split(",");
 
             int x = Integer.parseInt(co[0]);
             int y = Integer.parseInt(co[1]);
 
-            // Get cell information.
             boolean isMine = board.getCells()[x][y].getMine();
             int neighbours = board.getCells()[x][y].getSurroundingMines();
 
-            // Left Click
             if (SwingUtilities.isLeftMouseButton(e)) 
             {
                 if (!board.getCells()[x][y].getContent().equals("F"))
                 {
                     button.setIcon(null);
 
-                    //Mine is clicked.
+            
                     if(isMine) 
                     {  
-                        //red mine
+            
                         button.setIcon(gui.getIconRedMine());
                         button.setBackground(Color.red);
                         board.getCells()[x][y].setContent("M");
@@ -779,14 +675,14 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                     }
                     else 
                     {
-                        // The player has clicked on a number.
+            
                         board.getCells()[x][y].setContent(Integer.toString(neighbours));
                         button.setText(Integer.toString(neighbours));
                         gui.setTextColor(button);
 
                         if( neighbours == 0 ) 
                         {
-                            // Show all surrounding cells.
+            
                             button.setBackground(Color.lightGray);
                             button.setText("");
                             findZeroes(x, y);
@@ -798,7 +694,8 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                     }
                 }
             }
-            // Right Click
+
+
             else if (SwingUtilities.isRightMouseButton(e)) 
             {
                 if(board.getCells()[x][y].getContent().equals("F")) 
@@ -806,8 +703,6 @@ public class Game implements MouseListener, ActionListener, WindowListener{
                     board.getCells()[x][y].setContent("");
                     button.setText("");
                     button.setBackground(new Color(0,110,140));
-
-                    //simple blue
 
                     button.setIcon(gui.getIconTile());
                     gui.incMines();
@@ -825,10 +720,7 @@ public class Game implements MouseListener, ActionListener, WindowListener{
             checkGame();
         }
     }
-
-
     
-    //---------------------EMPTY FUNCTIONS-------------------------------//
     @Override
     public void mousePressed(MouseEvent e) {}
     @Override
