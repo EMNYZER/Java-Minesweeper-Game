@@ -6,7 +6,6 @@ public class Main
     {
         Menu menu = new Menu();
         menu.playBackgroundMusic("src\\resources\\music\\BGS1.wav");
-        // new Game();
 
     }
 }

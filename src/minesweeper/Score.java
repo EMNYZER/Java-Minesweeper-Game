@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.*;
 
 
-public class Score
+public class Score extends GameObject
 {
     private Connection connection;
     private int playerId;
@@ -235,6 +235,17 @@ public class Score
             sqlex.printStackTrace();
             return false;
         }
+    }
+
+    private int score;
+    public void resetScore() {
+        reset();
+        score = 0;
+        System.out.println("Score has been reset.");
+    }
+
+    public void performAction() {
+        System.out.println("Performing scoring action");
     }
 
     
