@@ -237,10 +237,9 @@ public class Score extends GameObject
         }
     }
 
-    private int score;
-    public void resetScore() {
+    
+    public void reset() {
         reset();
-        score = 0;
         System.out.println("Score has been reset.");
     }
 
