@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.*;
 
 
-public class Score
+public class Score extends GameObject
 {
     private Connection connection;
     private int playerId;
@@ -148,6 +148,10 @@ public class Score
         } catch (SQLException sqlex) {
             sqlex.printStackTrace();
         }
+    }
+
+    public void performAction() {
+        System.out.println("Performing scoring action");
     }
     
     public void updateGamesPlayed(int playerId) {
