@@ -3,7 +3,6 @@ package minesweeper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
@@ -122,9 +121,11 @@ public class UI extends JFrame {
             public void run() {
                 while (!stopTimer) {
                     timePassed++;
-                    timePassedLabel.setText("  " + timePassed + "  ");
+                    SwingUtilities.invokeLater(() -> {
+                        timePassedLabel.setText("  " + timePassed + "  ");
+                    });
                     try {
-                        sleep(1000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException ex) {
                     }
                 }

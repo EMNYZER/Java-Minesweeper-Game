@@ -11,16 +11,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Menu {
-    
+
     JFrame frame = new JFrame("Minesweeper");
     ImageIcon backgroundIcon = new ImageIcon("src\\resources\\BG2.jpg");
     JLabel backgroundLabel = new JLabel(backgroundIcon);
-
+    
     JPanel menu = new JPanel();
-    JButton play = new JButton("Play");
-    JButton exit = new JButton("Exit");
-
+    ImageIcon IMGbutton = new ImageIcon("src\\resources\\Start_Button.png");
+    JButton play = new JButton(IMGbutton);
+    ImageIcon IMGexit = new ImageIcon("src\\resources\\Exit_Button.png");
+    JButton exit = new JButton(IMGexit);
+    
     Menu() {
+        play.setOpaque(false);
+        play.setBorderPainted(false); 
+        play.setContentAreaFilled(false); 
+        play.setFocusPainted(false);
+        
+        exit.setOpaque(false);
+        exit.setBorderPainted(false); 
+        exit.setContentAreaFilled(false); 
+        exit.setFocusPainted(false); 
         menu.setOpaque(false);
         menu.setBorder(new EmptyBorder(200, 200, 200, 200));
 
